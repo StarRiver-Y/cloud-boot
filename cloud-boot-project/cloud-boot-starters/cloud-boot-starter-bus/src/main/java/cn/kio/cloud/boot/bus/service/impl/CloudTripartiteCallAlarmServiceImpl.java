@@ -5,12 +5,13 @@ import cn.kio.cloud.boot.bus.service.BusMessageService;
 import cn.kio.cloud.boot.bus.support.BusAlarmTypeEnum;
 import cn.kio.cloud.boot.bus.service.CloudTripartiteCallAlarmService;
 import cn.hutool.core.map.MapUtil;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.TraceContext;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.sleuth.CurrentTraceContext;
-import org.springframework.cloud.sleuth.TraceContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,7 +37,7 @@ public class CloudTripartiteCallAlarmServiceImpl implements CloudTripartiteCallA
     @Value("${spring.profiles.active}")
     private String active;
 
-    private final CurrentTraceContext currentTraceContext;
+    private final Tracer tracer;
 
     private final BusMessageService busMessageService;
 
@@ -66,8 +67,9 @@ public class CloudTripartiteCallAlarmServiceImpl implements CloudTripartiteCallA
                 map.put("url", url);
             }
 
-            if (null != currentTraceContext) {
-                TraceContext context = currentTraceContext.context();
+            Span span = tracer.currentSpan();
+            if (null != span) {
+                TraceContext context = span.context();
                 if (null != context) {
 
                     map.put("traceId", context.traceId());

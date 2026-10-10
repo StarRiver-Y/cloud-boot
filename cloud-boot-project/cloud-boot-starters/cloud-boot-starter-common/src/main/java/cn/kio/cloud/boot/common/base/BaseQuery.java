@@ -3,7 +3,7 @@ package cn.kio.cloud.boot.common.base;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import java.io.Serializable;
 
 /**

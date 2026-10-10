@@ -1,27 +1,26 @@
 package cn.kio.cloud.boot.bus.consumer;
 
 import cn.kio.cloud.boot.bus.service.BusMessageConsumerService;
-import cn.kio.cloud.boot.bus.sink.CloudBusSink;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.function.Consumer;
 
 /**
  * 全局消费
  *
  * @author kio
  */
-@Component
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
-@EnableBinding(CloudBusSink.class)
 public class CloudBusConsumer {
 
     private final BusMessageConsumerService busMessageConsumerService;
 
-    @StreamListener(CloudBusSink.INPUT)
-    public void cloudChannelConsumer(String message) {
-        busMessageConsumerService.init(message);
+    @Bean
+    public Consumer<String> cloudBusConsumer() {
+        return busMessageConsumerService::init;
     }
 
 }

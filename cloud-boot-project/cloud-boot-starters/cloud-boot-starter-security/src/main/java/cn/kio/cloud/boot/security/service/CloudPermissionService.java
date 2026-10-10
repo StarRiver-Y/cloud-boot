@@ -4,8 +4,6 @@ import cn.kio.cloud.boot.exception.ServiceRuntimeException;
 import cn.kio.cloud.boot.security.auth.http.CloudSecurityAuthClient;
 import cn.kio.cloud.boot.security.auth.model.form.RequestInfoForm;
 import cn.kio.cloud.boot.security.properties.CloudSecurityAuthProperties;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.extra.servlet.ServletUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +11,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 权限校验 service
@@ -42,7 +45,10 @@ public class CloudPermissionService {
             return true;
         }
 
-        String userId = ServletUtil.getHeader(request, "UserId", CharsetUtil.CHARSET_ISO_8859_1);
+        String userId = request.getHeader("UserId");
+        if (userId != null) {
+            userId = new String(userId.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        }
 
         if (StringUtils.isBlank(userId)) {
             throw new ServiceRuntimeException("用户不能为空");
@@ -52,7 +58,7 @@ public class CloudPermissionService {
         requestInfoForm.setUserId(userId);
         requestInfoForm.setAppKey(cloudSecurityAuthProperties.getAppKey());
         requestInfoForm.setPermissions(permissions);
-        requestInfoForm.setHeaders(ServletUtil.getHeaderMap(request));
+        requestInfoForm.setHeaders(getHeaderMap(request));
         requestInfoForm.setQueryParams(request.getParameterMap());
 
         try {
@@ -60,7 +66,7 @@ public class CloudPermissionService {
             if (wrapper != null) {
                 byte[] buf = wrapper.getContentAsByteArray();
                 if (buf.length > 0) {
-                    requestInfoForm.setBody(new String(buf, CharsetUtil.CHARSET_UTF_8));
+                    requestInfoForm.setBody(new String(buf, StandardCharsets.UTF_8));
                 }
             }
         } catch (Exception e) {
@@ -69,5 +75,15 @@ public class CloudPermissionService {
 
 
         return cloudSecurityAuthClient.isAuthority(requestInfoForm);
+    }
+
+    private Map<String, String> getHeaderMap(HttpServletRequest request) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headers.put(headerName, request.getHeader(headerName));
+        }
+        return headers;
     }
 }

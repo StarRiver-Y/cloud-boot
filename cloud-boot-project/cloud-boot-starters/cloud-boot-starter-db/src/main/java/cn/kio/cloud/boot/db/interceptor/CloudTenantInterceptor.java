@@ -8,7 +8,7 @@ import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
-import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
+import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -135,8 +135,8 @@ public class CloudTenantInterceptor implements Interceptor {
                 }
                 if (update.getUpdateSets() != null) {
                     for (UpdateSet us : update.getUpdateSets()) {
-                        for (Expression exp : us.getExpressions()) {
-                            if (exp instanceof Select sel) {
+                        for (Object value : us.getValues()) {
+                            if (value instanceof Select sel) {
                                 processSelectBody(sel.getSelectBody(), tenantColumns, ignoreSet, tenantId);
                             }
                         }
@@ -159,7 +159,7 @@ public class CloudTenantInterceptor implements Interceptor {
         }
     }
 
-    private void processSelectBody(SelectBody body, String[] tenantColumns, Set<String> ignoreTables, String tenantId) {
+    private void processSelectBody(Select body, String[] tenantColumns, Set<String> ignoreTables, String tenantId) {
         if (body instanceof PlainSelect plain) {
             addTenantConditionToFromItem(plain.getFromItem(), plain, tenantColumns, ignoreTables, tenantId);
             if (plain.getJoins() != null) {
@@ -167,12 +167,12 @@ public class CloudTenantInterceptor implements Interceptor {
                     addTenantConditionToFromItem(join.getRightItem(), plain, tenantColumns, ignoreTables, tenantId);
                 }
             }
-        } else if (body instanceof WithItem withItem) {
-            if (withItem.getSubSelect() != null) {
-                processSelectBody(withItem.getSubSelect().getSelectBody(), tenantColumns, ignoreTables, tenantId);
+        } else if (body instanceof ParenthesedSelect parenthesedSelect) {
+            if (parenthesedSelect.getSelect() != null) {
+                processSelectBody(parenthesedSelect.getSelect(), tenantColumns, ignoreTables, tenantId);
             }
         } else if (body instanceof SetOperationList setOp) {
-            for (SelectBody sb : setOp.getSelects()) {
+            for (Select sb : setOp.getSelects()) {
                 processSelectBody(sb, tenantColumns, ignoreTables, tenantId);
             }
         }
@@ -242,20 +242,29 @@ public class CloudTenantInterceptor implements Interceptor {
             insert.getColumns().add(new Column(col));
         }
 
-        if (insert.getItemsList() instanceof ExpressionList exprList) {
-            for (int i = 0; i < tenantColumns.length; i++) {
-                exprList.getExpressions().add(new StringValue(tenantId));
-            }
-        } else if (insert.getItemsList() instanceof MultiExpressionList multiList) {
-            for (ExpressionList list : multiList.getExpressionLists()) {
-                for (int i = 0; i < tenantColumns.length; i++) {
-                    list.getExpressions().add(new StringValue(tenantId));
+        Values values = insert.getValues();
+        if (values != null) {
+            ExpressionList<?> expressions = values.getExpressions();
+            boolean multiRowInsert = expressions.getExpressions().stream()
+                    .allMatch(ParenthesedExpressionList.class::isInstance);
+            if (multiRowInsert) {
+                for (Object expression : expressions.getExpressions()) {
+                    addTenantValues((ParenthesedExpressionList<?>) expression, tenantColumns, tenantId);
                 }
+            } else {
+                addTenantValues(expressions, tenantColumns, tenantId);
             }
         } else if (insert.getSelect() != null) {
             processSelectBody(insert.getSelect().getSelectBody(), tenantColumns, Collections.emptySet(), tenantId);
         } else {
-            throw new IllegalStateException("Unsupported INSERT itemsList type: " + insert.getItemsList());
+            throw new IllegalStateException("Unsupported INSERT statement: " + insert);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void addTenantValues(ExpressionList values, String[] tenantColumns, String tenantId) {
+        for (int i = 0; i < tenantColumns.length; i++) {
+            values.add(new StringValue(tenantId));
         }
     }
 

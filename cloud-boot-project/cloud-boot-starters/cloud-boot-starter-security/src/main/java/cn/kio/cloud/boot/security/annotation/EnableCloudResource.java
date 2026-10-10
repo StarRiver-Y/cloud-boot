@@ -3,7 +3,6 @@ package cn.kio.cloud.boot.security.annotation;
 import cn.kio.cloud.boot.security.configuration.CloudResourceAutoConfiguration;
 import cn.kio.cloud.boot.security.configuration.CloudSecurityConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.lang.annotation.*;
@@ -18,6 +17,5 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Import({CloudResourceAutoConfiguration.class, CloudSecurityConfiguration.class})
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public @interface EnableCloudResource {
 }
