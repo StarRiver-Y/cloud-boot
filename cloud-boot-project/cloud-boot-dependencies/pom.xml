@@ -33,7 +33,6 @@
         <frontend-maven-plugin.yarnVersion>v1.22.18</frontend-maven-plugin.yarnVersion>
         <docker-maven-plugin.version>0.39.1</docker-maven-plugin.version>
         <docker-maven-plugin.dockerFile>Dockerfile</docker-maven-plugin.dockerFile>
-        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
         <!--docker hub-->
         <docker.host>tcp://10.10.157.146:2375</docker.host>
@@ -425,12 +424,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- sonar -->
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>${sonar-maven-plugin.version}</version>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
