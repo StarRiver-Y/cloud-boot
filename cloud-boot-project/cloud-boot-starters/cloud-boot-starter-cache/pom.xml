@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.kio.cloud.boot</groupId>
+        <artifactId>cloud-boot-starters</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>cloud-boot-starter-cache</artifactId>
+    <name>Cloud Boot Starter Cache</name>
+    <description>Cloud Boot Starter Cache</description>
+
+    <properties>
+        <main.basedir>${basedir}/../../..</main.basedir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Starter Cache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!--redis-->
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter-redis</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--caffeine-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+    </dependencies>
+</project>

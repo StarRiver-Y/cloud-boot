@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.kio.cloud.boot</groupId>
+        <artifactId>cloud-boot-starters</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>cloud-boot-starter-security</artifactId>
+    <name>Cloud Boot Starter security</name>
+    <description>Cloud Boot Starter security</description>
+
+    <properties>
+        <main.basedir>${basedir}/../../..</main.basedir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter-feign</artifactId>
+        </dependency>
+
+        <!--auth service-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-authorization-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+</project>

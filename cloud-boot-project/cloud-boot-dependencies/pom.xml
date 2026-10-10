@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.kio.cloud.boot</groupId>
+        <artifactId>cloud-boot-build</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>cloud-boot-dependencies</artifactId>
+    <packaging>pom</packaging>
+    <name>Cloud Boot Dependencies</name>
+    <description>Cloud Boot Dependencies</description>
+
+    <properties>
+        <main.basedir>${basedir}/../..</main.basedir>
+
+        <!--springboot-->
+        <spring-boot.version>2.7.5</spring-boot.version>
+        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
+        <spring.authorization.version>0.4.2</spring.authorization.version>
+
+        <!--maven 插件-->
+        <maven-assembly-plugin.descriptor>src/main/assembly/build.xml</maven-assembly-plugin.descriptor>
+        <maven-assembly-plugin.output-directory>target</maven-assembly-plugin.output-directory>
+        <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+        <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
+        <frontend-maven-plugin.nodeVersion>v16.17.0</frontend-maven-plugin.nodeVersion>
+        <frontend-maven-plugin.yarnVersion>v1.22.18</frontend-maven-plugin.yarnVersion>
+        <docker-maven-plugin.version>0.39.1</docker-maven-plugin.version>
+        <docker-maven-plugin.dockerFile>Dockerfile</docker-maven-plugin.dockerFile>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+
+        <!--docker hub-->
+        <docker.host>tcp://10.10.157.146:2375</docker.host>
+        <docker.hub>swr.cn-east-2.myhuaweicloud.com</docker.hub>
+        <docker.namespace>chc</docker.namespace>
+        <docker.hub.username/>
+        <docker.hub.password/>
+        <docker.project/>
+        <docker.repo>${project.artifactId}</docker.repo>
+        <docker.tag>${project.version}</docker.tag>
+
+        <!--lib-->
+        <hutool.version>5.8.26</hutool.version>
+
+        <!--db-->
+        <dynamic-ds.version>3.5.1</dynamic-ds.version>
+        <mysql.version>8.0.33</mysql.version>
+        <sqlserver.version>9.4.1.jre8</sqlserver.version>
+        <mybatis.version>2.2.2</mybatis.version>
+        <pagehelper-spring.version>1.4.6</pagehelper-spring.version>
+        <pagehelper.version>5.3.1</pagehelper.version>
+        <liquibase.version>4.3.5</liquibase.version>
+
+        <!--retrofit-->
+        <retrofit.version>2.9.0</retrofit.version>
+
+        <!--kafka client-->
+        <kafka.client.version>3.1.2</kafka.client.version>
+        <netty-all.version>4.1.82.Final</netty-all.version>
+        <!--cache-->
+        <caffeine.version>3.1.2</caffeine.version>
+
+        <!--job-->
+        <job.version>2.3.1</job.version>
+    </properties>
+
+    <dependencyManagement>
+        <!--spring-->
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--spring cloud authorization-->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-authorization-server</artifactId>
+                <version>${spring.authorization.version}</version>
+            </dependency>
+
+            <!--Cloud Boot-->
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-common</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-autoconfigure</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-feign</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-web</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-log</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-db</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-db-init</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-job</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-msg</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-redis</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-cache</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-security</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-bus</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-config</artifactId>
+                <version>${cloud.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.kio.cloud.boot</groupId>
+                <artifactId>cloud-boot-starter-test</artifactId>
+                <version>${cloud.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!--db-->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
+            <!--jdbc-mysql-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <!--jdbc-sqlserver-->
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${sqlserver.version}</version>
+            </dependency>
+
+            <!--kafka  client-->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.client.version}</version>
+            </dependency>
+
+            <!--lib-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+                <optional>true</optional>
+            </dependency>
+
+            <!--cache-->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+
+            <!--job-->
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${job.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-all</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-all.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--springboot maven 打包插件-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <configuration>
+                        <finalName>${project.build.finalName}</finalName>
+                        <layers>
+                            <enabled>true</enabled>
+                        </layers>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!--springboot  deploy 插件-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven.deploy.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>*.properties</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>${project.artifactId}</id>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <finalName>build</finalName>
+                                <descriptors>
+                                    <descriptor>${maven-assembly-plugin.descriptor}</descriptor>
+                                </descriptors>
+                                <outputDirectory>${maven-assembly-plugin.output-directory}</outputDirectory>
+                                <appendAssemblyId>false</appendAssemblyId>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                    <configuration>
+                        <!-- node安装路径 -->
+                        <installDirectory>target</installDirectory>
+                        <!-- 前端代码路径 -->
+                        <workingDirectory>${project.build.directory}</workingDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>install node and yarn</id>
+                            <goals>
+                                <goal>install-node-and-yarn</goal>
+                            </goals>
+                            <configuration>
+                                <nodeVersion>${frontend-maven-plugin.nodeVersion}</nodeVersion>
+                                <yarnVersion>${frontend-maven-plugin.yarnVersion}</yarnVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>yarn run i</id>
+                            <goals>
+                                <goal>yarn</goal>
+                            </goals>
+                            <configuration>
+                                <arguments>install</arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>yarn run build</id>
+                            <goals>
+                                <goal>yarn</goal>
+                            </goals>
+                            <configuration>
+                                <arguments>build</arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!--docker 打包插件-->
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>install-image</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>deploy-image</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+
+                    <configuration>
+                        <!-- Docker Remote Api-->
+                        <dockerHost>${docker.host}</dockerHost>
+                        <!-- Docker 镜像私服-->
+                        <registry>${docker.hub}</registry>
+                        <removeNamePattern>/^${project.artifactId}.*/</removeNamePattern>
+                        <!-- 认证信息-->
+                        <authConfig>
+                            <push>
+                                <username>${docker.hub.username}</username>
+                                <password>${docker.hub.password}</password>
+                            </push>
+                        </authConfig>
+                        <images>
+                            <image>
+                                <name>${docker.hub}/${docker.namespace}/${docker.project}/${docker.repo}:${docker.tag}
+                                </name>
+                                <build>
+                                    <dockerFile>${project.basedir}/${docker-maven-plugin.dockerFile}</dockerFile>
+                                </build>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+
+                <!-- sonar -->
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

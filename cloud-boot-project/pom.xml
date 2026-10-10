@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.kio.cloud.boot</groupId>
+        <artifactId>cloud-boot-build</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>cloud-boot-project</artifactId>
+    <packaging>pom</packaging>
+    <name>Cloud Boot Project</name>
+    <description>Cloud Boot Project</description>
+
+    <properties>
+        <main.basedir>${basedir}/..</main.basedir>
+    </properties>
+
+    <modules>
+        <module>cloud-boot-dependencies</module>
+        <module>cloud-boot-parent</module>
+        <module>cloud-boot</module>
+        <module>cloud-boot-autoconfigure</module>
+        <module>cloud-boot-starters</module>
+
+    </modules>
+</project>

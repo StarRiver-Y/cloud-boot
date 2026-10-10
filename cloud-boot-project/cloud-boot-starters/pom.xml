@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.kio.cloud.boot</groupId>
+        <artifactId>cloud-boot-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../cloud-boot-parent</relativePath>
+    </parent>
+
+    <artifactId>cloud-boot-starters</artifactId>
+    <packaging>pom</packaging>
+    <name>Cloud Boot Starters</name>
+    <description>Cloud Boot Starters</description>
+
+    <properties>
+        <main.basedir>${basedir}/../..</main.basedir>
+    </properties>
+
+    <modules>
+        <module>cloud-boot-starter</module>
+        <module>cloud-boot-starter-common</module>
+        <module>cloud-boot-starter-feign</module>
+        <module>cloud-boot-starter-web</module>
+        <module>cloud-boot-starter-log</module>
+        <module>cloud-boot-starter-db</module>
+        <module>cloud-boot-starter-db-init</module>
+        <module>cloud-boot-starter-job</module>
+        <module>cloud-boot-starter-test</module>
+        <module>cloud-boot-starter-msg</module>
+        <module>cloud-boot-starter-redis</module>
+        <module>cloud-boot-starter-cache</module>
+        <module>cloud-boot-starter-security</module>
+        <module>cloud-boot-starter-bus</module>
+        <module>cloud-boot-starter-config</module>
+    </modules>
+</project>

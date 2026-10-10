@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 从高到地低 OFF 、 FATAL 、 ERROR 、 WARN 、 INFO 、 DEBUG 、 TRACE 、 ALL -->
+<!-- 日志输出规则  根据当前ROOT 级别，日志输出时，级别高于root默认的级别时  会输出 -->
+<!-- 以下 每个配置的 filter 是过滤掉输出文件里面，会出现高级别文件，依然出现低级别的日志信息，通过filter 过滤只记录本级别的日志-->
+
+<!-- 属性描述
+scan：设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true
+scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。
+当scan为true时，此属性生效。默认的时间间隔为1分钟。
+debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %X{processCode} [%tid] [%thread] [${applicationName},%X{traceId},%X{spanId}] %-5level %logger{50} -%msg%n"/>
+
+    <!--定义日志文件的存储地址 -->
+    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="./logs"/>
+    <springProperty scope="context" name="logLevel" source="logging.pattern.level" defaultValue="INFO"/>
+    <springProperty scope="context" name="fileLogEnabled" source="cloud.boot.log.file.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="skywalkingLogEnabled" source="cloud.boot.log.skywalking.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="huaweiLtsLogEnabled" source="cloud.boot.log.huawei-lts.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="aliyunSlsLogEnabled" source="cloud.boot.log.aliyun-sls.enabled" defaultValue="false"/>
+
+    <!--定义数据上报日志平台 kafka 相关配置-->
+    <springProperty scope="context" name="applicationName" source="spring.application.name" defaultValue=""/>
+    <springProperty scope="context" name="active" source="spring.profiles.active" defaultValue=""/>
+    <springProperty scope="context" name="port" source="server.port" defaultValue=""/>
+    <springProperty scope="context" name="kafkaLogEnabled" source="cloud.boot.log.kafka.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="bootstrapServers" source="cloud.boot.log.kafka.bootstrap-servers" defaultValue=""/>
+    <springProperty scope="context" name="topic" source="cloud.boot.log.kafka.topic" defaultValue=""/>
+
+    <!--定义数据上报huawei lts平台相关配置-->
+    <springProperty scope="context" name="huaweiLogProjectId" source="cloud.boot.log.huawei-lts.project-id" defaultValue=""/>
+    <springProperty scope="context" name="huaweiLogGroupId" source="cloud.boot.log.huawei-lts.group-id" defaultValue=""/>
+    <springProperty scope="context" name="huaweiLogStreamId" source="cloud.boot.log.huawei-lts.stream-id" defaultValue=""/>
+    <springProperty scope="context" name="huaweiLogAccessKey" source="cloud.boot.log.huawei-lts.access-key" defaultValue="false"/>
+    <springProperty scope="context" name="huaweiLogSecret" source="cloud.boot.log.huawei-lts.secret" defaultValue=""/>
+    <springProperty scope="context" name="huaweiLogRegion" source="cloud.boot.log.huawei-lts.region" defaultValue=""/>
+    <springProperty scope="context" name="huaweiLogeLocal" source="cloud.boot.log.huawei-lts.local" defaultValue="true"/>
+
+    <!--定义数据上报aliyun lts 平台相关配置-->
+    <springProperty scope="context" name="aliyunLogEndpoint" source="cloud.boot.log.aliyun-sls.endpoint" defaultValue=""/>
+    <springProperty scope="context" name="aliyunLogAccessKey" source="cloud.boot.log.aliyun-sls.access-key" defaultValue=""/>
+    <springProperty scope="context" name="aliyunLogSecret" source="cloud.boot.log.aliyun-sls.secret" defaultValue=""/>
+    <springProperty scope="context" name="aliyunLogProject" source="cloud.boot.log.aliyun-sls.project" defaultValue=""/>
+    <springProperty scope="context" name="aliyunLogStore" source="cloud.boot.log.aliyun-sls.store" defaultValue=""/>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <!-- 控制台输出 -->
+    <appender name="ConsoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <Pattern>${LOG_PATTERN}</Pattern>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="cn.kio.cloud.boot" level="INFO"/>
+    <logger name="org" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.springframework.security.oauth2" level="INFO"/>
+    <logger name="com.alibaba" level="WARN"/>
+    <logger name="liquibase" level="WARN"/>
+    <logger name="com.yomahub.liteflow.util.LOGOPrinter" level="WARN"/>
+
+    <!-- 日志输出 skywalking -->
+    <if condition='property("skywalkingLogEnabled").equals("true")'>
+        <then>
+            <appender name="skywalkingLog"
+                      class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
+                <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                    <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                         <Pattern>${LOG_PATTERN}</Pattern>
+                    </layout>
+                    <charset>UTF-8</charset>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+    <!-- 日志输出 huawei lts -->
+    <if condition='property("huaweiLtsLogEnabled").equals("true")'>
+        <then>
+            <appender name="huaweiLtsLog" class="com.huaweicloud.lts.appender.LogbackSDKAppender">
+                <!--  华为云账号的项目ID（project id）  -->
+                <projectId>${huaweiLogProjectId}</projectId>
+                <!--  华为云日志服务日志组ID  -->
+                <logGroupId>${huaweiLogGroupId}</logGroupId>
+                <!--  华为云日志服务日志流ID  -->
+                <logStreamId>${huaweiLogStreamId}</logStreamId>
+                <!--  华为云账号的AK, 认证用的AK硬编码到代码中或者明文存储都有很大的安全风险, 建议密文存放, 使用时解密, 确保安全  -->
+                <accessKeyId>${huaweiLogAccessKey}</accessKeyId>
+                <!--  华为云账号的SK, 认证用的SK硬编码到代码中或者明文存储都有很大的安全风险, 建议密文存放, 使用时解密, 确保安全  -->
+                <accessKeySecret>${huaweiLogSecret}</accessKeySecret>
+                <!--  云日志服务的区域  -->
+                <regionName>${huaweiLogRegion}</regionName>
+                <encoder>
+                     <Pattern>${LOG_PATTERN}</Pattern>
+                </encoder>
+                <!--  单个Appender能缓存的日志大小上限  -->
+                <totalSizeInBytes>104857600</totalSizeInBytes>
+                <!--  producer发送日志时阻塞时间  -->
+                <maxBlockMs>0</maxBlockMs>
+                <!--  执行日志发送任务的线程池大小  -->
+                <ioThreadCount>8</ioThreadCount>
+                <!--  producer发送单批日志量上限  -->
+                <batchSizeThresholdInBytes>524288</batchSizeThresholdInBytes>
+                <!--  producer发送单批日志条数上限  -->
+                <batchCountThreshold>4096</batchCountThreshold>
+                <!--  producer发送单批日志等待时间  -->
+                <lingerMs>2000</lingerMs>
+                <!--  producer发送日志失败后重试次数  -->
+                <retries>5</retries>
+                <!--  首次重试的退避时间  -->
+                <baseRetryBackoffMs>500</baseRetryBackoffMs>
+                <!--  重试的最大退避时间  -->
+                <maxRetryBackoffMs>500</maxRetryBackoffMs>
+                <!-- 默认false, true: 可以跨云上报日志, false: 仅能在华为云ecs主机上报日志 -->
+                <enableLocalTest>${huaweiLogeLocal}</enableLocalTest>
+            </appender>
+        </then>
+    </if>
+
+    <!-- 日志输出 ali lts -->
+    <if condition='property("aliyunSlsLogEnabled").equals("true")'>
+        <then>
+            <!-- 原始 Aliyun SLS appender -->
+            <appender name="aliyunSlsLog" class="com.aliyun.openservices.log.logback.LoghubAppender">
+                <endpoint>${aliyunLogEndpoint}</endpoint>
+                <accessKeyId>${aliyunLogAccessKey}</accessKeyId>
+                <accessKeySecret>${aliyunLogSecret}</accessKeySecret>
+                <project>${aliyunLogProject}</project>
+                <logStore>${aliyunLogStore}</logStore>
+                <encoder>
+                    <pattern>${LOG_PATTERN}</pattern>
+                </encoder>
+            </appender>
+
+            <!-- 异步包装 -->
+            <appender name="asyncAliyunSlsLog" class="ch.qos.logback.classic.AsyncAppender">
+                <appender-ref ref="aliyunSlsLog"/>
+                <!-- 可选参数：队列大小、丢弃策略 -->
+                <queueSize>5000</queueSize>
+                <discardingThreshold>0</discardingThreshold>
+            </appender>
+        </then>
+    </if>
+
+
+    <!-- 日志输出kafka -->
+    <if condition='property("kafkaLogEnabled").equals("true")'>
+        <then>
+            <!-- kafka 日志输出-->
+            <appender name="KafkaLog" class="cn.kio.cloud.boot.log.append.KafkaAppender">
+                <applicationName>${applicationName}</applicationName>
+                <active>${active}</active>
+                <port>${port}</port>
+                <enabled>${kafkaLogEnabled}</enabled>
+                <bootstrapServers>${bootstrapServers}</bootstrapServers>
+                <topic>${topic}</topic>
+            </appender>
+
+            <appender name="asyncKafkaLog" class="ch.qos.logback.classic.AsyncAppender">
+                <neverBlock>true</neverBlock>
+                <appender-ref ref="KafkaLog"/>
+            </appender>
+        </then>
+    </if>
+
+    <!-- 日志输出文件 -->
+    <if condition='property("fileLogEnabled").equals("true")'>
+        <then>
+            <!--Info文件输出-->
+            <!-- 按照每天和固定大小(5MB)生成日志文件【最新的日志，是日期最大数字最大的】 -->
+            <appender name="AccessLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                    <level>INFO</level>
+                </filter>
+                <File>${logPath}/access.log</File>
+                <!--滚动策略-->
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <!--日志文件输出的文件名-->
+                    <FileNamePattern>${logPath}/access/access_%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+                    <!--日志文件保留天数-->
+                    <MaxHistory>31</MaxHistory>
+                    <!--日志文件最大的大小-->
+                    <MaxFileSize>50MB</MaxFileSize>
+                </rollingPolicy>
+                <!--格式化输出-->
+                <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                    <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                         <Pattern>${LOG_PATTERN}</Pattern>
+                    </layout>
+                    <charset>UTF-8</charset>
+                </encoder>
+            </appender>
+
+            <!--Error文件输出-->
+            <!-- 按照每天和固定大小(5MB)生成日志文件【最新的日志，是日期最大数字最大的】 -->
+            <appender name="ErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                    <!--设置日志级别,过滤掉info日志,只输入error日志-->
+                    <level>ERROR</level>
+                </filter>
+                <File>${logPath}/error.log</File>
+                <!--滚动策略-->
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <!--日志文件输出的文件名-->
+                    <FileNamePattern>${logPath}/error/error_%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+                    <!--日志文件保留天数-->
+                    <MaxHistory>30</MaxHistory>
+                    <!--日志文件最大的大小-->
+                    <MaxFileSize>50MB</MaxFileSize>
+                </rollingPolicy>
+                <!--格式化输出-->
+                <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                    <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                         <Pattern>${LOG_PATTERN}</Pattern>
+                    </layout>
+                    <charset>UTF-8</charset>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+    <root name="cn.kio.cloud" level="${logLevel}">
+        <appender-ref ref="ConsoleLog"/>
+        <if condition='property("fileLogEnabled").equals("true")'>
+            <then>
+                <appender-ref ref="AccessLog"/>
+                <appender-ref ref="ErrorLog"/>
+            </then>
+        </if>
+        <if condition='property("skywalkingLogEnabled").equals("true")'>
+            <then>
+                <appender-ref ref="skywalkingLog"/>
+            </then>
+        </if>
+        <if condition='property("huaweiLtsLogEnabled").equals("true")'>
+            <then>
+                <appender-ref ref="huaweiLtsLog"/>
+            </then>
+        </if>
+        <if condition='property("aliyunSlsLogEnabled").equals("true")'>
+            <then>
+                <appender-ref ref="asyncAliyunSlsLog"/>
+            </then>
+        </if>
+        <if condition='property("kafkaLogEnabled").equals("true")'>
+            <then>
+                <appender-ref ref="asyncKafkaLog"/>
+            </then>
+        </if>
+    </root>
+
+    <!-- 可选扩展引入 -->
+    <include resource="logback-extension.xml" optional="true"/>
+</configuration>
