@@ -26,6 +26,11 @@
         </dependency>
 
         <dependency>
+            <groupId>cn.kio.cloud.boot</groupId>
+            <artifactId>cloud-boot-starter-common</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
             <optional>true</optional>
